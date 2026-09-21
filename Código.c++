@@ -1,59 +1,49 @@
-const int PINO_BOTAO = 2;
-const int PINO_LED1 = 8;
-const int PINO_LED2 = 9;
+// C++ code
+int buttonPin = 7;
+int ledPin = 10;
+int ledPin2 = 11;
 
 int estadoCiclo = 0;
-int estadoBotaoAnterior = HIGH;
+int ultimoEstado = HIGH; 
+ 
 
-unsigned long ultimoTempoDebounce = 0;
-const unsigned long atrasoDebounce = 50;
-
-void atualizarLEDs() {
-  switch (estadoCiclo) {
-    case 1:
-      digitalWrite(PINO_LED1, HIGH);
-      digitalWrite(PINO_LED2, LOW);
-      break;
-
-    case 2:
-      digitalWrite(PINO_LED1, LOW);
-      digitalWrite(PINO_LED2, HIGH);
-      break;
-
-    case 3:
-      digitalWrite(PINO_LED1, LOW);
-      digitalWrite(PINO_LED2, LOW);
-      break;
-  }
-}
 
 void setup() {
-  pinMode(PINO_LED1, OUTPUT);
-  pinMode(PINO_LED2, OUTPUT);
-  pinMode(PINO_BOTAO, INPUT_PULLUP);
-
-  digitalWrite(PINO_LED1, LOW);
-  digitalWrite(PINO_LED2, LOW);
+  pinMode(ledPin, OUTPUT);
+  pinMode(ledPin2, OUTPUT);
+  
+  digitalWrite(ledPin, LOW);
+  digitalWrite(ledPin2, LOW);
 }
 
 void loop() {
-  int leituraAtual = digitalRead(PINO_BOTAO);
+int atualEstado = digitalRead(buttonPin);
 
-  if (leituraAtual != estadoBotaoAnterior) {
-    ultimoTempoDebounce = millis();
-  }
-
-  if ((millis() - ultimoTempoDebounce) > atrasoDebounce) {
-    if (leituraAtual == LOW && estadoBotaoAnterior == HIGH) {
-      estadoCiclo++;
-
-      if (estadoCiclo > 3) {
-        estadoCiclo = 1;
-      }
-
-      atualizarLEDs();
+  if (atualEstado == LOW && ultimoEstado == HIGH){
+    estadoCiclo++;
+    
+    if (estadoCiclo > 2) {
+      estadoCiclo = 0;
     }
-  }
 
+    if (estadoCiclo == 0) {
+      digitalWrite(ledPin, LOW);
+      digitalWrite(ledPin2, LOW);
+    } 
+    else if (estadoCiclo == 1) {
+      digitalWrite(ledPin, HIGH);
+      digitalWrite(ledPin2, LOW);
+    } 
+    else if (estadoCiclo == 2) {
+      digitalWrite(ledPin, LOW);
+      digitalWrite(ledPin2, HIGH);
+    }
+
+    delay(50);
+
+
+}
+    ultimoEstado = atualEstado;
+}
   estadoBotaoAnterior = leituraAtual;
 }
